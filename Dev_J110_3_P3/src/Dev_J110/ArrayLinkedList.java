@@ -6,16 +6,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-
-
-
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ArrayLinkedList <T> {
        
-    private Node first; //изначально null
+    private Node first;
       
     //Вспомогательные методы
-    //Метод, который создает коллекцию из нашего списка
+    
+    //Метод, который создает и возвращает коллекцию (ArrayList<T>) из нашего списка
     public ArrayList<T> toCollection(){
         Node current = first;
         ArrayList<T> list = new ArrayList<>();
@@ -29,8 +29,7 @@ public class ArrayLinkedList <T> {
         }        
         else
             throw new NullPointerException("Список пустой.");    
-    }
-        
+    }        
     //Метод для реверса массива
     public T[] reverse(T[] list) {
         T[] result = (T[])new Object[list.length];
@@ -43,12 +42,10 @@ public class ArrayLinkedList <T> {
         if (!isEmpty()) 
             first = null;                    
     }
-    //Метод, возвращающий количество элементов списка.
-    public int sizeList() {
-              
+    //Метод, возвращающий количество элементов данных списка.
+    public int sizeList() {              
         return toCollection().size();       
-    }
-    
+    }    
     /*Метод, возвращающий индекс свободного (пустого) элемента в массиве данных текущего узла.
       Если все элементы массива текущего узла не Null, возвращается -1. */
     public int searcherNull(T[] array){
@@ -72,12 +69,21 @@ public class ArrayLinkedList <T> {
         }
         return res;
     }
- 
+    /*Метод используется для предотвращения дублирования кода. Выполняет рутинные
+      операции, встречающиеся в пяти методах: реверсирует полученную из нашего
+      списка коллекцию, очищает наш текущий список и записывает в него заново 
+      уже модифицированные данные */ 
+    public void util(List<T> list) {
+        Collections.reverse(list);
+            erasingList();
+            list.forEach(this::addFirst);
+    }
+    //Ниже методы, написание которых требует задание.
+    
     //Метод, определяющий, является ли список пустым, или нет;    
     public boolean isEmpty() {
         return first == null;
-    } 
-    
+    }     
     //Метод добавляет данные в начало списка.
     public void addFirst(T dat) {
         if(isEmpty() || searcherNull((T[])first.data) == -1) {
@@ -87,20 +93,15 @@ public class ArrayLinkedList <T> {
            first = newNode;}
         else
            first.data[searcherNull((T[])first.data)] = dat; 
-    }
-   
+    }   
     //Метод добавляет данные в начало списка из массива с сохранением порядка.
     public void addFromArray(T[] dat) {
-        
         Arrays.asList(reverse(dat)).forEach(this::addFirst); 
-    }
-    
+    }    
     //Метод добавляет данные в конец списка из массива с сохранением порядка.
-    public void addFromArrayTail(T[] dat) {
-        
-         Arrays.asList(dat).forEach(this::addToTail);
+    public void addFromArrayTail(T[] dat) {    
+        Arrays.asList(dat).forEach(this::addToTail);
     }
-
     //извлечение значения из начала списка без его удаления из списка
     public T extractFirst() {
         if (!isEmpty())
@@ -108,7 +109,6 @@ public class ArrayLinkedList <T> {
         else
             throw new NullPointerException("Список пустой.");       
     }
-
     //Извлечение значения из начала списка с удалением его из списка
     public T extractFirstAndRemove() {
         if (!isEmpty()) {
@@ -123,8 +123,7 @@ public class ArrayLinkedList <T> {
         }
         else
             throw new NullPointerException("Список пустой.");
-    }
-    
+    }    
     //добавление значения в конец списка
     public void addToTail(T data) {
         if (isEmpty()) 
@@ -132,12 +131,9 @@ public class ArrayLinkedList <T> {
         else {
             List<T> list = toCollection();
             list.add(data);
-            Collections.reverse(list);
-            erasingList();
-            list.forEach(this::addFirst);
+            util(list); 
         }
     }
-
     //извлечение значения из конца списка без его удаления
     public T extractTailData() {
         if (!isEmpty()) {
@@ -148,30 +144,22 @@ public class ArrayLinkedList <T> {
         else
             throw new NullPointerException("Список пустой.");   
     }
-
     //извлечение значения из конца списка с удалением
     public T extractTailAndRemove() {
-
-         T res = extractTailData();
-         List<T> list = toCollection();
-         list.remove(list.size() - 1);
-         Collections.reverse(list);
-         erasingList();
-         list.forEach(this::addFirst);
-         
-         return res;
-    }
-   
+           T res = extractTailData();
+           List<T> list = toCollection();
+           list.remove(list.size() - 1);
+           util(list);         
+        return res;
+    }   
     //Метод, определяющий, содержит ли список заданное значение, или нет
-
     public boolean isInList(T toEquals) {
         return toCollection().contains(toEquals);    
     }
-
     //печать всех значений списка
     public void printAll() {
         Node current = first;
-        if (current == null) {
+        if (isEmpty()) {
             System.out.println("Элементы списка отсутствуют, список пустой.");
         } else if (current.toNext == null) {
             current.printNodeData();
@@ -187,41 +175,33 @@ public class ArrayLinkedList <T> {
             System.out.println();
         }
     }
-
     //Метод удаляющий заданное значение из списка; если значения в списке нет, то ничего происходить не должно.
-    public void removeIfHas(T toRemove) {
- 
+    public void removeIfHas(T toRemove) { 
         List<T> list = toCollection();
         list.removeIf(x -> x.equals(toRemove)); 
-        Collections.reverse(list);
-        erasingList();
-        list.forEach(this::addFirst);
+        util(list); 
     }
     //Метод добавляет все значения заданной коллекции coll в начало списка с сохранением порядка.
     public void mergeCollection(Collection<T> coll) {
         ArrayList<T> list = toCollection();
         list.addAll(0, coll);
-        Collections.reverse(list);
-        erasingList();
-        list.forEach(this::addFirst);
+        util(list); 
     }
     //Метод добавляет все значения заданной коллекции collection в конец списка с сохранением порядка.
     public void mergeCollectionTail(Collection<T> coll) {
         ArrayList<T> list = toCollection();
         list.addAll(sizeList(), coll);
-        Collections.reverse(list);
-        erasingList();
-        list.forEach(this::addFirst);
+        util(list); 
     }
-    //Метод, при помощи которого текущий список поглощает список listToMerge с добавлением значений в начало первого списка; после поглощения список listToMerge очищается;
+    /*Метод, при помощи которого текущий список поглощает список listToMerge с добавлением значений в 
+    начало первого списка; после поглощения список listToMerge очищается;*/
     public void mergeLists(ArrayLinkedList <T> listToMerge) {
-
         mergeCollection(listToMerge.toCollection());
         listToMerge.erasingList();       
     }
-    //Метод, при помощи которого текущий список поглощает список listToMerge с добавлением значений в конец первого списка; после поглощения список listToMerge очищается;
-    public void mergeListsBack(ArrayLinkedList <T> listToMerge) {
-        
+    /*Метод, при помощи которого текущий список поглощает список listToMerge с добавлением значений в 
+    конец первого списка; после поглощения список listToMerge очищается;*/
+    public void mergeListsBack(ArrayLinkedList <T> listToMerge) {        
         mergeCollectionTail(listToMerge.toCollection());
         listToMerge.erasingList();
     }
@@ -235,6 +215,7 @@ public class ArrayLinkedList <T> {
         private Node() {
            data = (T[])new Object[5];
         }
+        //печатает данные из массива одного узла
         public void printNodeData() {
             System.out.print("[");
             for(int i = 0; i < 5; i++)
@@ -242,6 +223,7 @@ public class ArrayLinkedList <T> {
                 System.out.print(i != 4? data[i] + "," : data[i]);
             System.out.print("]");
         }
+        //создает и возвращает список<T> из данных массива текущего узла
         public List<T> toList() {
             List<T> list = Arrays.asList(data);
            return list;

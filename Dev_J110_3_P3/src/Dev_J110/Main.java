@@ -20,8 +20,7 @@ public class Main {
         - String[] stringData;
         - Integer[] intData;
         - LocalDate[] localDates;        
-*/
-        
+*/        
         String[] stringData = new String[]{"мышь", "крот", "собака", "бык", "овца", "козел", "гусь", "утка"}; 
         Integer[] intData = new Integer[]{100, 200, 300, 400, 500, 600};
         LocalDate[] localDates = new LocalDate[]{LocalDate.MAX, LocalDate.MIN, 
@@ -41,23 +40,17 @@ public class Main {
         данные, содержащиеся в разных узлах списка, отделены друг от друга квадратными скобками.
          Пустые, незаполненные данными, элементы массива первых узлов списка, методом printAll()
         игнорируются и в консоль не выводятся. */
+        
         stringList.printAll();
         intList.printAll();
         dateList.printAll();
         System.out.println();
-        
-        String[] stringNewData = new String[]{"крыса", "жук", "кот", "петух", "заяц", "кролик"};
-        ArrayLinkedList<String> newMyList = new ArrayLinkedList<>();
-        newMyList.addFromArray(stringNewData); 
-        //Integer[] intData1 = new Integer[]{-100, -200, -300, -400, -500, -600};
-        newMyList.printAll();
-        
-        stringList.mergeListsBack(newMyList);  
-        stringList.printAll();
-        newMyList.printAll();
+
+        //Тестируем...
+
         
         
-        
+    
 /* Список доступных методов:
         - Метод addFirst(T dat) добавляет значения в начало списка;
         - Метод addFromArray(T[] dat) добавляет все значения заданного массива в начало списка с сохранением порядка;
